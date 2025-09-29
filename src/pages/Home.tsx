@@ -23,12 +23,12 @@ export default function Home() {
             className="relative left-[calc(50%-11rem)] aspect-1155/678 w-144.5 -translate-x-1/2 rotate-30 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-288.75"
           />
         </div>
-        <div className="mx-auto max-w-2xl py-25">
+        <div className="mx-auto max-w-2xl mt-10">
           <div className="text-center">
             <h1 className="text-5xl font-semibold tracking-tight text-balance text-white sm:text-7xl">
               🤖 Chatbot Multimodelo
             </h1>
-            <div className="flex flex-col gap-4 mb-4 mt-10 text-2xl text-gray-400 sm:text-xl/8">
+            <div className="flex flex-col gap-2 mb-4 mt-10 text-2xl text-gray-400 sm:text-xl/8">
               <div className="flex items-center gap-2">
                 <label className="font-semibold mr-5">Selecciona modelo:</label>
                 <select

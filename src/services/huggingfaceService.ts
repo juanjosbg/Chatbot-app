@@ -8,7 +8,7 @@ export const sendMessageToHuggingFace = async (prompt: string) => {
     const res = await axios.post(
       HUGGINGFACE_API_URL,
       { inputs: prompt },
-      { headers: { "Authorization": `Bearer ${import.meta.env.VITE_HUGGINGFACE_API_KEY || ""}` } } // API Key es opcional para modelos públicos
+      { headers: { "Authorization": `Bearer ${import.meta.env.VITE_HUGGINGFACE_API_KEY || ""}` } } 
     );
     return res.data[0].generated_text;
   } catch (err) {
