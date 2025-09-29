@@ -24,7 +24,7 @@ export default function MessageInput({
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Escribe un mensaje..."
-        className="flex-1 border-2 border-gray-300 rounded-full p-2 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        className="flex-1 border-2 border-gray-300 rounded-full p-2 text-gray-2 00 focus:outline-none focus:ring-2 focus:ring-blue-400"
       />
       <button
         onClick={handleSend}
