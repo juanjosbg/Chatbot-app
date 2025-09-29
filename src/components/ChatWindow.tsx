@@ -26,6 +26,7 @@ export default function ChatWindow({ messages }: Props) {
           className={`p-3 rounded-2xl max-w-[100%] break-words whitespace-pre-wrap text-left
             ${msg.role === "user" ? "bg-blue-600 text-white self-end" : "bg-gray-800 text-gray-200 self-start"}
           `}
+          style={{ whiteSpace: "pre-line" }}
         >
           <p className="text-sm">
             <b>{msg.role === "user" ? "Tú" : "Bot"}:</b> {msg.content}
