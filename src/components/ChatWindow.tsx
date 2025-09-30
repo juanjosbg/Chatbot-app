@@ -8,23 +8,34 @@ type Props = {
 export default function ChatWindow({ messages }: Props) {
   return (
     <div className="bg-gray-800 rounded-xl p-6 shadow-lg h-[500px] overflow-y-auto flex flex-col space-y-4 mt-5">
-      {messages.map((msg, idx) => (
+      {messages.map((msg, i) => (
         <div
-          key={idx}
-          className={`flex ${
-            msg.role === "user" ? "justify-end" : "justify-start"
-          }`}
+          key={i}
+          className={`mb-4 ${msg.role === "user" ? "text-right" : "text-left"}`}
         >
-          <div
-            className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-md
-              ${
+          {msg.content && (
+            <p
+              className={`inline-block px-4 py-2 rounded-lg ${
                 msg.role === "user"
-                  ? "bg-blue-600 text-white self-end"
-                  : "bg-gray-700 text-gray-200 self-start"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-700 text-gray-200"
               }`}
-          >
-            {msg.content}
-          </div>
+            >
+              {msg.content}
+            </p>
+          )}
+          {msg.images && msg.images.length > 0 && (
+            <div className="flex gap-2 mt-2 flex-wrap">
+              {msg.images.map((img, idx) => (
+                <img
+                  key={idx}
+                  src={img}
+                  alt={`uploaded-${idx}`}
+                  className="w-24 h-24 object-cover rounded-lg border border-gray-600"
+                />
+              ))}
+            </div>
+          )}
         </div>
       ))}
     </div>

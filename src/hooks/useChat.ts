@@ -8,8 +8,12 @@ export const useChat = () => {
     { role: "assistant", content: "hola!, En qué te podemos ayudar hoy ?" },
   ]);
   const [input, setInput] = useState("");
-  const [model, setModel] = useState("google/gemini-2.5-flash-lite-preview-09-2025");
-  const [models, setModels] = useState<string[]>(["google/gemini-2.5-flash-lite-preview-09-2025"]);
+  const [model, setModel] = useState(
+    "google/gemini-2.5-flash-lite-preview-09-2025"
+  );
+  const [models, setModels] = useState<string[]>([
+    "google/gemini-2.5-flash-lite-preview-09-2025",
+  ]);
 
   useEffect(() => {
     const fetchModels = async () => {
@@ -19,12 +23,12 @@ export const useChat = () => {
     fetchModels();
   }, []);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+  const handleSend = async (text?: string, images?: string[]) => {
+    if (!text?.trim() && (!images || images.length === 0)) return;
 
     const newMessages: Message[] = [
       ...messages,
-      { role: "user", content: input },
+      { role: "user", content: text || "", images },
     ];
     setMessages(newMessages);
     setInput("");
@@ -32,10 +36,16 @@ export const useChat = () => {
     try {
       let reply = "";
       if (model === "gpt-3.5-turbo" || model === "gpt-4o-mini") {
-        reply = await sendMessageToOpenAI(newMessages);
+        reply = await sendMessageToOpenAI(
+          newMessages.map((m) => ({
+            role: m.role,
+            content: m.content ?? "",
+          }))
+        );
       } else {
         reply = await sendMessage(newMessages, model);
       }
+
       setMessages([...newMessages, { role: "assistant", content: reply }]);
     } catch (err) {
       setMessages((prev) => [
