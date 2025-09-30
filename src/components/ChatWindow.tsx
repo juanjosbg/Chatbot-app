@@ -1,36 +1,30 @@
-// src/components/ChatWindow.tsx
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import type { Message } from "@/types/chat";
 
-interface Props {
+type Props = {
   messages: Message[];
-}
+};
 
 export default function ChatWindow({ messages }: Props) {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
-    }
-  }, [messages]);
-
   return (
-    <div
-      ref={containerRef}
-      className=" rounded-lg p-4 h-96 overflow-y-auto flex flex-col gap-4"
-    >
-      {messages.map((msg, i) => (
+    <div className="bg-gray-800 rounded-xl p-6 shadow-lg h-[500px] overflow-y-auto flex flex-col space-y-4 mt-5">
+      {messages.map((msg, idx) => (
         <div
-          key={i}
-          className={`p-3 rounded-2xl max-w-[100%] break-words whitespace-pre-wrap text-left
-            ${msg.role === "user" ? "bg-blue-600 text-white self-end" : "bg-gray-800 text-gray-200 self-start"}
-          `}
-          style={{ whiteSpace: "pre-line" }}
+          key={idx}
+          className={`flex ${
+            msg.role === "user" ? "justify-end" : "justify-start"
+          }`}
         >
-          <p className="text-sm">
-            <b>{msg.role === "user" ? "Tú" : "Bot"}:</b> {msg.content}
-          </p>
+          <div
+            className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-md
+              ${
+                msg.role === "user"
+                  ? "bg-blue-600 text-white self-end"
+                  : "bg-gray-700 text-gray-200 self-start"
+              }`}
+          >
+            {msg.content}
+          </div>
         </div>
       ))}
     </div>

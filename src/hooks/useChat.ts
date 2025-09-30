@@ -4,12 +4,13 @@ import { sendMessageToOpenAI } from "@/services/openaiService";
 import { sendMessage, getModels } from "@/services/aiService";
 
 export const useChat = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([
+    { role: "assistant", content: "hola!, En qué te podemos ayudar hoy ?" },
+  ]);
   const [input, setInput] = useState("");
-  const [model, setModel] = useState("gpt-3.5-turbo");
-  const [models, setModels] = useState<string[]>(["gpt-3.5-turbo"]);
+  const [model, setModel] = useState("google/gemini-2.5-flash-lite-preview-09-2025");
+  const [models, setModels] = useState<string[]>(["google/gemini-2.5-flash-lite-preview-09-2025"]);
 
-  // Cargar modelos de OpenRouter al inicio
   useEffect(() => {
     const fetchModels = async () => {
       const routerModels = await getModels();
@@ -21,7 +22,10 @@ export const useChat = () => {
   const handleSend = async () => {
     if (!input.trim()) return;
 
-    const newMessages: Message[] = [...messages, { role: "user", content: input }];
+    const newMessages: Message[] = [
+      ...messages,
+      { role: "user", content: input },
+    ];
     setMessages(newMessages);
     setInput("");
 
