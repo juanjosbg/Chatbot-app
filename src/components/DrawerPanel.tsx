@@ -3,6 +3,9 @@ import React, { Fragment } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { CiChat1, CiSearch } from "react-icons/ci";
 import { Dialog, DialogTitle, Transition } from "@headlessui/react";
+import { useNavigate } from "react-router-dom";
+
+import logo from "@/assets/robot.png";
 
 interface DrawerPanelProps {
   setOpen: (open: boolean) => void;
@@ -17,6 +20,13 @@ export default function DrawerPanel({
   setModel,
   models,
 }: DrawerPanelProps) {
+  const navigate = useNavigate();
+
+  const goToRegister = () => {
+    setOpen(false);
+    navigate("/Register");
+  };
+
   return (
     <Transition.Child
       as={Fragment}
@@ -32,7 +42,15 @@ export default function DrawerPanel({
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-4 sm:px-6">
             <DialogTitle className="text-lg font-medium text-white">
-              Panel de opciones
+              <div className="hover:scale-110 transition-transform">
+                <button
+                  onClick={goToRegister}
+                  className="flex items-center gap-3"
+                >
+                  Chating Modeling
+                  <img src={logo} alt="Logo" className="w-7" />
+                </button>
+              </div>
             </DialogTitle>
             <button
               type="button"
@@ -44,15 +62,16 @@ export default function DrawerPanel({
             </button>
           </div>
 
-          <hr className="text-gray-400 sm:text-xl/8"/>
+          <hr className="text-gray-400 sm:text-xl/8" />
 
           <div className="relative flex-1 px-4 overflow-y-auto">
             <div className="flex flex-col gap-2 mb-4 mt-10 text-2xl text-gray-400 sm:text-xl/8">
-              <div className="flex  items-center gap-2">
+              <div className="flex items-center gap-2">
                 <label className="font-thing mr-5 text-white">
                   Selecciona modelo:
                 </label>
-                <select className="border rounded-full max-w-50 px-4 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-900 text-white"
+                <select
+                  className="border rounded-full max-w-50 px-4 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-900 text-white"
                   value={model}
                   onChange={(e) => setModel(e.target.value)}
                 >
@@ -68,6 +87,7 @@ export default function DrawerPanel({
                 </select>
               </div>
             </div>
+
             <span className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
               <CiChat1 className="text-gray-300" />
               <p className="text-gray-300">Nuevo Chat</p>
