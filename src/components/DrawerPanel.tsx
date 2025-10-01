@@ -1,12 +1,12 @@
-"use client";
-import { Fragment, useState } from "react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "@/hooks/useAuth";
+import { Fragment, useState, useEffect } from "react";
 import { CiChat1, CiSearch } from "react-icons/ci";
-import { Dialog, DialogTitle, Transition } from "@headlessui/react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
+import { useChatStore } from "@/hooks/useChatStore";
+import { Dialog, DialogTitle, Transition } from "@headlessui/react";
 
 import logo from "@/assets/robot.png";
-import { useAuth } from "@/hooks/useAuth";
 import AuthModal from "@/components/AuthModal";
 
 interface DrawerPanelProps {
@@ -26,8 +26,27 @@ export default function DrawerPanel({
   const { user } = useAuth();
   const [showModal, setShowModal] = useState(false);
 
-  const handleClick = () => {
-    setShowModal(true); // abre el modal
+  const {
+    chats,
+    activeChatId,
+    fetchChats,
+    createChat,
+    setActiveChatId,
+    deleteChat,
+  } = useChatStore();
+
+  useEffect(() => {
+    if (user) {
+      fetchChats();
+    }
+  }, [user, fetchChats]);
+
+  const handleNewChat = () => {
+    if (!user) {
+      setShowModal(true);
+      return;
+    }
+    createChat();
   };
 
   return (
@@ -47,7 +66,7 @@ export default function DrawerPanel({
             <DialogTitle className="text-lg font-medium text-white">
               <div className="hover:scale-110 transition-transform">
                 <button
-                  onClick={handleClick}
+                  onClick={() => setShowModal(true)}
                   className="flex items-center gap-3"
                 >
                   Chating Modeling
@@ -68,7 +87,6 @@ export default function DrawerPanel({
           <hr className="text-gray-400 sm:text-xl/8" />
 
           <div className="relative flex-1 px-4 overflow-y-auto">
-            {/* Select modelos */}
             <div className="flex flex-col gap-2 mb-4 mt-10 text-2xl text-gray-400 sm:text-xl/8">
               <div className="flex items-center gap-2">
                 <label className="font-thing mr-5 text-white">
@@ -92,15 +110,46 @@ export default function DrawerPanel({
               </div>
             </div>
 
-            <span className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
+            {/* Crear nuevo chat */}
+            <span
+              onClick={handleNewChat}
+              className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded"
+            >
               <CiChat1 className="text-gray-300" />
               <p className="text-gray-300">Nuevo Chat</p>
             </span>
 
+            {/* Buscar chats */}
             <span className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
               <CiSearch className="text-gray-300" />
               <p className="text-gray-300">Buscar Chats</p>
             </span>
+
+            <hr className="text-gray-500 sm:text-xl/8 mt-5" />
+
+            {/* Lista de chats */}
+            <div className="relative mt-4">
+              {chats.map((chat) => (
+                <div key={chat.id} className="flex items-center justify-between">
+                  <button
+                    onClick={() => setActiveChatId(chat.id)}
+                    className={`flex-1 text-left px-3 py-2 rounded ${
+                      chat.id === activeChatId
+                        ? "bg-indigo-600 text-white"
+                        : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                    }`}
+                  >
+                    {chat.title}
+                  </button>
+                  <button
+                    onClick={() => deleteChat(chat.id)}
+                    className="ml-2 text-red-400 hover:text-red-600"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
