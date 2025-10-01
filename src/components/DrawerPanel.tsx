@@ -1,11 +1,13 @@
 "use client";
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { CiChat1, CiSearch } from "react-icons/ci";
 import { Dialog, DialogTitle, Transition } from "@headlessui/react";
 import { useNavigate } from "react-router-dom";
 
 import logo from "@/assets/robot.png";
+import { useAuth } from "@/hooks/useAuth";
+import AuthModal from "@/components/AuthModal";
 
 interface DrawerPanelProps {
   setOpen: (open: boolean) => void;
@@ -21,10 +23,11 @@ export default function DrawerPanel({
   models,
 }: DrawerPanelProps) {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [showModal, setShowModal] = useState(false);
 
-  const goToRegister = () => {
-    setOpen(false);
-    navigate("/Register");
+  const handleClick = () => {
+    setShowModal(true); // abre el modal
   };
 
   return (
@@ -44,7 +47,7 @@ export default function DrawerPanel({
             <DialogTitle className="text-lg font-medium text-white">
               <div className="hover:scale-110 transition-transform">
                 <button
-                  onClick={goToRegister}
+                  onClick={handleClick}
                   className="flex items-center gap-3"
                 >
                   Chating Modeling
@@ -65,6 +68,7 @@ export default function DrawerPanel({
           <hr className="text-gray-400 sm:text-xl/8" />
 
           <div className="relative flex-1 px-4 overflow-y-auto">
+            {/* Select modelos */}
             <div className="flex flex-col gap-2 mb-4 mt-10 text-2xl text-gray-400 sm:text-xl/8">
               <div className="flex items-center gap-2">
                 <label className="font-thing mr-5 text-white">
@@ -99,6 +103,18 @@ export default function DrawerPanel({
             </span>
           </div>
         </div>
+
+        {/* Modal */}
+        <AuthModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          user={user}
+          navigateToLogin={() => {
+            setShowModal(false);
+            setOpen(false);
+            navigate("/Register");
+          }}
+        />
       </Dialog.Panel>
     </Transition.Child>
   );

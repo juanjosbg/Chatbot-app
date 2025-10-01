@@ -28,17 +28,14 @@ export default function Register() {
 
     try {
       if (isRegistering) {
-        // Crear cuenta
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         
-        // Guardar nombre completo en el perfil del usuario
         if (auth.currentUser) {
           await updateProfile(auth.currentUser, { displayName: name });
         }
 
         navigate("/");
       } else {
-        // Iniciar sesión
         await signInWithEmailAndPassword(auth, email, password);
         navigate("/");
       }
