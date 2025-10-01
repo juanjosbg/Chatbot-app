@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, Fragment } from "react";
+import { useState, Fragment } from "react";
 import { useChat } from "@/hooks/useChat";
 import ChatWindow from "@/components/ChatWindow";
 import MessageInput from "@/components/MessageInput";

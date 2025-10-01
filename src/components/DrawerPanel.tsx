@@ -1,5 +1,5 @@
 "use client";
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { CiChat1, CiSearch } from "react-icons/ci";
 import { Dialog, DialogTitle, Transition } from "@headlessui/react";
