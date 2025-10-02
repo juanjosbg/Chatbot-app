@@ -14,7 +14,7 @@ import {
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
-interface Chat {
+export interface Chat {
   id: string;
   title: string;
   userId: string;

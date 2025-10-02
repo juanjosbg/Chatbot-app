@@ -1,7 +1,5 @@
-export type Role = "user" | "assistant" | "system";
-
 export interface Message {
-  role: Role;
+  role: "user" | "assistant";
   content: string;
   images?: string[];
 }

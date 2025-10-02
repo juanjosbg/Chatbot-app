@@ -37,3 +37,19 @@ npm install
 - Dashboard de métricas con estadísticas de uso.
 - Integración de entrada de voz con Whisper API.
 - Traducción automática de conversaciones a múltiples idiomas.
+
+
+#### modelo de datos
+Cada chat tendrá una subcolección messages:
+
+chats (collection)
+  └── chatId (document)
+       ├── title: string
+       ├── userId: string
+       ├── createdAt: timestamp
+       └── messages (subcollection)
+            └── messageId (document)
+                 ├── role: "user" | "assistant"
+                 ├── content: string
+                 ├── images: string[]
+                 ├── createdAt: timestamp
