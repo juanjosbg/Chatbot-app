@@ -1,4 +1,5 @@
-// store/useChatStore.ts
+"use client";
+
 import { create } from "zustand";
 import { db } from "@/config/firebase";
 import {
@@ -14,21 +15,7 @@ import {
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
-export interface Chat {
-  id: string;
-  title: string;
-  userId: string;
-  createdAt: any;
-}
-
-interface ChatStore {
-  chats: Chat[];
-  activeChatId: string | null;
-  fetchChats: () => void;
-  createChat: () => Promise<void>;
-  deleteChat: (id: string) => Promise<void>;
-  setActiveChatId: (id: string) => void;
-}
+import type { Chat, ChatStore } from "@/types/chat";
 
 export const useChatStore = create<ChatStore>((set, get) => ({
   chats: [],
@@ -46,7 +33,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     );
 
     onSnapshot(q, (snapshot) => {
-      const chats = snapshot.docs.map((doc) => ({
+      const chats: Chat[] = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...(doc.data() as Omit<Chat, "id">),
       }));
@@ -54,7 +41,6 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     });
   },
 
-  // Crear chat
   createChat: async () => {
     const auth = getAuth();
     const user = auth.currentUser;
@@ -67,10 +53,16 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     };
 
     const docRef = await addDoc(collection(db, "chats"), newChat);
+
+    await addDoc(collection(db, "chats", docRef.id, "messages"), {
+      role: "assistant",
+      content: "👋 Hola! Soy tu asistente virtual, ¿en qué te puedo ayudar hoy?",
+      createdAt: serverTimestamp(),
+    });
+
     set({ activeChatId: docRef.id });
   },
 
-  // Eliminar chat
   deleteChat: async (id: string) => {
     await deleteDoc(doc(db, "chats", id));
     set((state) => ({
@@ -79,6 +71,5 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     }));
   },
 
-  // Cambiar chat activo
   setActiveChatId: (id: string) => set({ activeChatId: id }),
 }));

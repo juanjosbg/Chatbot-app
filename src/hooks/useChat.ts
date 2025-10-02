@@ -38,8 +38,7 @@ export const useChat = () => {
     { role: "user", content, images },
   ];
   setMessages(newMessages);
-  setInput(""); // limpiar input
-
+  setInput("");
   try {
     let reply = "";
     if (model === "gpt-3.5-turbo" || model === "gpt-4o-mini") {
