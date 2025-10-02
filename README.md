@@ -2,6 +2,8 @@
 Aplicación web desarrollada con **React + Vite** que implementa un **chatbot potenciado por la API de OpenAI (ChatGPT)**.  
 El sistema permite mantener conversaciones en tiempo real con la IA, registrando cada interacción en **Firebase Firestore** para análisis y seguimiento.  
 
+------
+
 Este proyecto está orientado a **aprendizaje y portafolio profesional**, demostrando habilidades en:
 - Integración de APIs de Inteligencia Artificial.  
 - Gestión de datos en la nube con Firebase.  
@@ -46,12 +48,15 @@ VITE_OPENAI_API_KEY=your_openai_api_key
 ```bash
 npm run dev
 ```
+------
 
 ## 💡 Funcionalidades principales
 - ✅ Chat en tiempo real con IA de OpenAI.
 - ✅ Almacenamiento de conversaciones en Firebase Firestore.
 - ✅ Interfaz moderna y responsive con TailwindCSS.
 - ✅ Integración opcional con n8n para automatización de reportes y análisis.
+
+------
 
 ## 🛠️ Mejoras futuras
 - Autenticación de usuarios con Firebase Auth.
@@ -60,6 +65,7 @@ npm run dev
 - Integración de entrada de voz con Whisper API.
 - Traducción automática de conversaciones a múltiples idiomas.
 
+------
 
 ## 🗂️ Modelo de datos
 Cada chat contiene una subcolección de mensajes:
