@@ -1,3 +1,5 @@
+"use client";
+
 import { useAuth } from "@/hooks/useAuth";
 import { Fragment, useState, useEffect } from "react";
 import { CiChat1, CiSearch } from "react-icons/ci";
@@ -8,6 +10,8 @@ import { Dialog, DialogTitle, Transition } from "@headlessui/react";
 
 import logo from "@/assets/robot.png";
 import AuthModal from "@/components/AuthModal";
+import { db } from "@/config/firebase";
+import { doc, updateDoc } from "firebase/firestore";
 
 interface DrawerPanelProps {
   setOpen: (open: boolean) => void;
@@ -47,6 +51,14 @@ export default function DrawerPanel({
       return;
     }
     createChat();
+  };
+
+  const handleModelChange = async (newModel: string) => {
+    try {
+      if (activeChatId) {
+        await updateDoc(doc(db, "chats", activeChatId), { model: newModel });
+      }
+    } catch {}
   };
 
   return (
@@ -95,7 +107,11 @@ export default function DrawerPanel({
                 <select
                   className="border rounded-full max-w-50 px-4 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-900 text-white"
                   value={model}
-                  onChange={(e) => setModel(e.target.value)}
+                  onChange={async (e) => {
+                    const val = e.target.value;
+                    setModel?.(val);
+                    await handleModelChange(val);
+                  }}
                 >
                   {models.length > 0 ? (
                     models.map((m, i) => (
@@ -110,7 +126,6 @@ export default function DrawerPanel({
               </div>
             </div>
 
-            {/* Crear nuevo chat */}
             <span
               onClick={handleNewChat}
               className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded"
@@ -153,7 +168,7 @@ export default function DrawerPanel({
           </div>
         </div>
 
-        {/* Modal */}
+        {/* Modal auth */}
         <AuthModal
           isOpen={showModal}
           onClose={() => setShowModal(false)}

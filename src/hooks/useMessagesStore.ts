@@ -9,6 +9,8 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  updateDoc,
+  doc,
 } from "firebase/firestore";
 
 import type { Message, MessagesStore } from "@/types/chat";
@@ -22,20 +24,25 @@ export const useMessagesStore = create<MessagesStore>((set) => ({
       orderBy("createdAt", "asc")
     );
 
-    onSnapshot(q, (snapshot) => {
-      const msgs: Message[] = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as Message),
+    const unsub = onSnapshot(q, (snapshot) => {
+      const msgs: Message[] = snapshot.docs.map((d) => ({
+        id: d.id,
+        ...(d.data() as Message),
       }));
-
       set({ messages: msgs });
     });
+
+    return unsub;
   },
 
   sendMessage: async (chatId, msg) => {
     await addDoc(collection(db, "chats", chatId, "messages"), {
       ...msg,
       createdAt: serverTimestamp(),
+    });
+
+    await updateDoc(doc(db, "chats", chatId), {
+      lastMessageAt: serverTimestamp(),
     });
   },
 

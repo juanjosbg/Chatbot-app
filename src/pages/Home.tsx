@@ -1,6 +1,6 @@
 "use client";
 import { useState, Fragment } from "react";
-import { useChat } from "@/hooks/useChat";
+import { useChat } from "@/hooks/useChat"; 
 import ChatWindow from "@/components/ChatWindow";
 import MessageInput from "@/components/MessageInput";
 import { Dialog, Transition } from "@headlessui/react";
@@ -8,8 +8,7 @@ import { LiaSmsSolid } from "react-icons/lia";
 import DrawerPanel from "@/components/DrawerPanel";
 
 export default function Home() {
-  const { messages, input, setInput, handleSend, model, setModel, models } =
-    useChat();
+  const { messages, input, setInput, handleSend, currentChat } = useChat() as any;
   const [open, setOpen] = useState(false);
 
   return (
@@ -25,7 +24,7 @@ export default function Home() {
         <div className="mx-auto max-w-4xl mt-10">
           <div className="text-center">
             <h1 className="text-5xl font-semibold tracking-tight text-balance text-white sm:text-7xl">
-              🤖 Chatbot Multimodelo
+              {currentChat?.title ?? "🤖 Chatbot Multimodelo"}
             </h1>
 
             <div>
@@ -33,11 +32,7 @@ export default function Home() {
             </div>
 
             <div className="mt-2">
-              <MessageInput
-                input={input}
-                setInput={setInput}
-                handleSend={handleSend}
-              />
+              <MessageInput input={input} setInput={setInput} handleSend={handleSend} />
             </div>
           </div>
         </div>
@@ -61,9 +56,9 @@ export default function Home() {
                 <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
                   <DrawerPanel
                     setOpen={setOpen}
-                    model={model}
-                    setModel={setModel}
-                    models={models}
+                    model={currentChat?.model ?? "google/gemini-2.5-flash-lite-preview-09-2025"}
+                    setModel={() => {}}
+                    models={[currentChat?.model ?? "google/gemini-2.5-flash-lite-preview-09-2025"]}
                   />
                 </div>
               </div>

@@ -29,13 +29,13 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     const q = query(
       collection(db, "chats"),
       where("userId", "==", user.uid),
-      orderBy("createdAt", "desc")
+      orderBy("lastMessageAt", "desc")
     );
 
     onSnapshot(q, (snapshot) => {
-      const chats: Chat[] = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as Omit<Chat, "id">),
+      const chats: Chat[] = snapshot.docs.map((d) => ({
+        id: d.id,
+        ...(d.data() as Omit<Chat, "id">),
       }));
       set({ chats });
     });
@@ -49,7 +49,9 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     const newChat = {
       title: `Chat ${get().chats.length + 1}`,
       userId: user.uid,
+      model: "google/gemini-2.5-flash-lite-preview-09-2025",
       createdAt: serverTimestamp(),
+      lastMessageAt: serverTimestamp(),
     };
 
     const docRef = await addDoc(collection(db, "chats"), newChat);
@@ -66,7 +68,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   deleteChat: async (id: string) => {
     await deleteDoc(doc(db, "chats", id));
     set((state) => ({
-      chats: state.chats.filter((chat) => chat.id !== id),
+      chats: state.chats.filter((c) => c.id !== id),
       activeChatId: state.activeChatId === id ? null : state.activeChatId,
     }));
   },

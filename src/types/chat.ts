@@ -1,21 +1,22 @@
-// Representa un chat
-export interface Chat {
-  id: string;
-  title: string;
-  userId: string;
-  createdAt: any;
-}
+export type Role = "user" | "assistant";
 
-// Representa un mensaje dentro de un chat
 export interface Message {
   id?: string;
-  role: "user" | "assistant";
+  role: Role;
   content: string;
   images?: string[];
   createdAt?: any;
 }
 
-// Store de chats
+export interface Chat {
+  id: string;
+  title: string;
+  userId: string;
+  model?: string;
+  createdAt?: any;
+  lastMessageAt?: any;
+}
+
 export interface ChatStore {
   chats: Chat[];
   activeChatId: string | null;
@@ -25,10 +26,9 @@ export interface ChatStore {
   setActiveChatId: (id: string) => void;
 }
 
-// Store de mensajes
 export interface MessagesStore {
   messages: Message[];
-  fetchMessages: (chatId: string) => void;
-  sendMessage: (chatId: string, msg: Message) => Promise<void>;
+  fetchMessages: (chatId: string) => () => void;
+  sendMessage: (chatId: string, msg: Omit<Message, "id">) => Promise<void>;
   clearMessages: () => void;
 }
