@@ -1,3 +1,4 @@
+// src/hooks/useChatSession.ts
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
@@ -8,15 +9,12 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export function useChatSession() {
   const { activeChatId, chats } = useChatStore();
-  const { messages, fetchMessages, clearMessages, sendMessage } = useMessagesStore();
+  const { messages, clearMessages, sendMessage } = useMessagesStore();
   const [input, setInput] = useState("");
 
   useEffect(() => {
     clearMessages();
-    if (!activeChatId) return;
-    const unsub = fetchMessages(activeChatId);
-    return () => { if (typeof unsub === "function") unsub(); };
-  }, [activeChatId, fetchMessages, clearMessages]);
+  }, [activeChatId, clearMessages]);
 
   const handleSend = useCallback(
     async (text?: string, images?: string[]) => {
@@ -26,11 +24,22 @@ export function useChatSession() {
 
       setInput("");
 
-      await sendMessage(activeChatId, {
+      await addDoc(collection(db, "chats", activeChatId, "messages"), {
         role: "user",
         content,
-        images,
+        images: images ?? null,
+        createdAt: serverTimestamp(),
       });
+
+      try {
+        await fetch(`/api/chats/${activeChatId}/messages`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ role: "user", content, images: images ?? null }),
+        });
+      } catch (e) {
+        console.warn("No se pudo enviar user msg a Supabase (la UI sigue por Firestore).", e);
+      }
 
       try {
         const resp = await fetch("/api/chat", {
@@ -41,11 +50,22 @@ export function useChatSession() {
         const data = await resp.json();
         const reply = data?.reply ?? "⚠️ No se obtuvo respuesta.";
 
+        // 4) Guarda reply en Firestore
         await addDoc(collection(db, "chats", activeChatId, "messages"), {
           role: "assistant",
           content: reply,
           createdAt: serverTimestamp(),
         });
+
+        try {
+          await fetch(`/api/chats/${activeChatId}/messages`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ role: "assistant", content: reply }),
+          });
+        } catch (e) {
+          console.warn("No se pudo enviar assistant msg a Supabase.", e);
+        }
       } catch {
         await addDoc(collection(db, "chats", activeChatId, "messages"), {
           role: "assistant",
@@ -54,7 +74,7 @@ export function useChatSession() {
         });
       }
     },
-    [activeChatId, input, sendMessage]
+    [activeChatId, input]
   );
 
   const currentChat = chats.find((c) => c.id === activeChatId) || null;

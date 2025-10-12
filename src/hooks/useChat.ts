@@ -14,9 +14,7 @@ export const useChat = () => {
   } = useChatSession();
 
   const model = currentChat?.model ?? "google/gemini-2.5-flash-lite-preview-09-2025";
-
-  const setModel = (_: string) => { };
-
+  const setModel = (_: string) => {};
   const models = [model];
 
   return {

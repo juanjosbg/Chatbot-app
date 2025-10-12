@@ -1,23 +1,20 @@
-import { initializeApp, applicationDefault, cert, getApps } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
+import path from "path";
+import dotenv from "dotenv";
+dotenv.config({ path: path.resolve(process.cwd(), "server/.env.local") });
 
-function initAdmin() {
-  if (getApps().length) return; 
+import admin from "firebase-admin";
 
-  const svc = process.env.FIREBASE_SERVICE_JSON;
-  if (svc) {
-    const serviceAccount = JSON.parse(svc);
-    initializeApp({ credential: cert(serviceAccount as any) });
-    return;
-  }
-
-  try {
-    initializeApp({ credential: applicationDefault() });
-  } catch {
-    initializeApp();
+if (!admin.apps.length) {
+  const json = process.env.FIREBASE_SERVICE_JSON;
+  if (json) {
+    const payload = json.trim().startsWith("{")
+      ? json
+      : Buffer.from(json, "base64").toString("utf8");
+    const creds = JSON.parse(payload);
+    admin.initializeApp({ credential: admin.credential.cert(creds) });
+  } else {
+    admin.initializeApp();
   }
 }
 
-initAdmin();
-
-export const dbAdmin = getFirestore();
+export const firebaseAdmin = admin;

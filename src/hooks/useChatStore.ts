@@ -1,77 +1,66 @@
+// src/hooks/useChatStore.ts
 "use client";
 
 import { create } from "zustand";
-import { db } from "@/config/firebase";
-import {
-  collection,
-  addDoc,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  query,
-  orderBy,
-  serverTimestamp,
-  where,
-} from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { listChats, createChatAPI, deleteChatAPI } from "@/services/conversations";
 
-import type { Chat, ChatStore } from "@/types/chat";
+export type Chat = {
+  id: string;
+  user_id: string;
+  title: string;
+  model: string;
+  last_message_at: string | null;
+  created_at: string | null;
+};
+
+type ChatStore = {
+  chats: Chat[];
+  activeChatId: string | null;
+  fetchChats: () => Promise<void>;
+  createChat: (payload?: { title?: string; model?: string }) => Promise<string | null>;
+  deleteChat: (id: string) => Promise<void>;
+  setActiveChatId: (id: string) => void;
+};
 
 export const useChatStore = create<ChatStore>((set, get) => ({
   chats: [],
   activeChatId: null,
 
-  fetchChats: () => {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    if (!user) return;
+  fetchChats: async () => {
+    try {
+      const data: Chat[] = await listChats();
+      set({ chats: data });
+      const { activeChatId } = get();
+      if (!activeChatId && data.length > 0) {
+        set({ activeChatId: data[0].id });
+      }
+    } catch (e) {
+      console.error("fetchChats error", e);
+    }
+  },
 
-    const q = query(
-      collection(db, "chats"),
-      where("userId", "==", user.uid),
-      orderBy("lastMessageAt", "desc")
-    );
+  createChat: async (payload) => {
+    try {
+      const chat: Chat = await createChatAPI(payload);
+      set((s) => ({ chats: [chat, ...s.chats], activeChatId: chat.id }));
+      return chat.id;
+    } catch (e) {
+      console.error("createChat error", e);
+      return null;
+    }
+  },
 
-    onSnapshot(q, (snapshot) => {
-      const chats: Chat[] = snapshot.docs.map((d) => ({
-        id: d.id,
-        ...(d.data() as Omit<Chat, "id">),
+  deleteChat: async (id) => {
+    try {
+      await deleteChatAPI(id);
+      set((s) => ({
+        chats: s.chats.filter((c) => c.id !== id),
+        activeChatId: s.activeChatId === id ? null : s.activeChatId,
       }));
-      set({ chats });
-    });
+    } catch (e) {
+      console.error("deleteChat error", e);
+    }
   },
 
-  createChat: async () => {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    if (!user) return;
-
-    const newChat = {
-      title: `Chat ${get().chats.length + 1}`,
-      userId: user.uid,
-      model: "google/gemini-2.5-flash-lite-preview-09-2025",
-      createdAt: serverTimestamp(),
-      lastMessageAt: serverTimestamp(),
-    };
-
-    const docRef = await addDoc(collection(db, "chats"), newChat);
-
-    await addDoc(collection(db, "chats", docRef.id, "messages"), {
-      role: "assistant",
-      content: "👋 Hola! Soy tu asistente virtual, ¿en qué te puedo ayudar hoy?",
-      createdAt: serverTimestamp(),
-    });
-
-    set({ activeChatId: docRef.id });
-  },
-
-  deleteChat: async (id: string) => {
-    await deleteDoc(doc(db, "chats", id));
-    set((state) => ({
-      chats: state.chats.filter((c) => c.id !== id),
-      activeChatId: state.activeChatId === id ? null : state.activeChatId,
-    }));
-  },
-
-  setActiveChatId: (id: string) => set({ activeChatId: id }),
+  setActiveChatId: (id) => set({ activeChatId: id }),
 }));
