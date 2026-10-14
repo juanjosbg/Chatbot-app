@@ -1,90 +1,75 @@
-# 🤖 Chatbot con OpenAI
-Aplicación web desarrollada con **React + Vite** que implementa un **chatbot potenciado por la API de OpenAI (ChatGPT)**.  
-El sistema permite mantener conversaciones en tiempo real con la IA, registrando cada interacción en **Firebase Firestore** para análisis y seguimiento.  
+# AI Chatbot App
 
-------
+A real-time AI chat application built with **React, TypeScript and Vite**. Users sign in, create multiple conversations and chat with an LLM. Every message is stored in **Firebase Firestore**, so conversations persist across sessions and can be analyzed later.
 
-Este proyecto está orientado a **aprendizaje y portafolio profesional**, demostrando habilidades en:
-- Integración de APIs de Inteligencia Artificial.  
-- Gestión de datos en la nube con Firebase.  
-- Construcción de interfaces modernas y responsivas con React.  
+**Live demo:** [chatbot-app on Vercel](https://chatbot-app-1-2j4tp9oag-juanjosbgs-projects.vercel.app/)
 
-## 🚀 Tecnologías utilizadas
-- ⚛️ **React + Vite** → Framework moderno y veloz para el frontend.  
-- 🧠 **OpenAI API (ChatGPT)** → Motor de IA para generación de texto.  
-- 🔥 **Firebase Firestore** → Base de datos NoSQL en tiempo real.  
-- 🎨 **TailwindCSS** → Estilos rápidos, modernos y responsive.  
-- 🌐 **Node.js** → Entorno de ejecución para dependencias y herramientas.  
-- 🔄 **n8n** → Automatización de procesos y análisis de conversaciones.  
+![Screenshot](./docs/screenshot.png)
 
-------
- 
-## ⚙️ Instalación y configuración
-#### 1. Clonar el repositorio
-```bash
-git clone https://github.com/juanjosbg/chatbot-openai.git
-cd chatbot-openai
+---
+
+## Features
+
+- **Multi-provider AI layer.** A single `aiService` routes requests to **OpenAI** or **Hugging Face**, so models can be swapped without touching the UI.
+- **Authentication** with Firebase Auth (sign up, login, protected routes).
+- **Multiple conversations** with a sidebar to switch, create and resume chats.
+- **Persistent history** in Firestore for every user and conversation.
+- **Global state** managed with Zustand (separate stores for chats and messages).
+- **Responsive UI** with Tailwind CSS and Flowbite, plus toast notifications.
+
+## Tech stack
+
+| Layer | Tools |
+|---|---|
+| Front-end | React 19, TypeScript, Vite, React Router |
+| UI | Tailwind CSS, Flowbite, Headless UI, Heroicons |
+| State | Zustand |
+| AI | OpenAI API, Hugging Face Inference API |
+| Back-end as a service | Firebase Auth, Firestore |
+
+## Architecture
+
 ```
-#### 2. Instalar dependencias
+src/
+├── components/   Chat UI: ChatList, ChatWindow, MessageList, MessageInput, AuthModal
+├── hooks/        useAuth, useChat, useChatStore, useMessagesStore
+├── services/     aiService (router), openaiService, huggingfaceService
+├── config/       Firebase setup
+├── pages/        Home, Register
+├── routes/       App routes
+└── types/        Shared chat types
+```
+
+The UI never calls a model directly. Components use the `useChat` hook, which calls `aiService`, which picks the provider. Adding a new model means adding one service file.
+
+## Getting started
+
 ```bash
+git clone https://github.com/juanjosbg/Chatbot-app.git
+cd Chatbot-app
 npm install
-```
-#### 3. Configurar Firebase
-- Crear un proyecto en Firebase Console
-- Habilitar Firestore Database y Authentication
-- Crear un archivo .env en la raíz con tus credenciales
-
-```bash
-VITE_FIREBASE_API_KEY=your_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
-VITE_OPENAI_API_KEY=your_openai_api_key
-```
-
-#### 4. Ejecutar la aplicación
-```bash
+cp .env.example .env   # add your keys
 npm run dev
 ```
-------
 
-## 💡 Funcionalidades principales
-- ✅ Chat en tiempo real con IA de OpenAI.
-- ✅ Almacenamiento de conversaciones en Firebase Firestore.
-- ✅ Interfaz moderna y responsive con TailwindCSS.
-- ✅ Integración opcional con n8n para automatización de reportes y análisis.
+### Environment variables
 
-------
+```
+VITE_OPENAI_API_KEY=
+VITE_HF_API_KEY=
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_APP_ID=
+```
 
-## 🛠️ Mejoras futuras
-- Autenticación de usuarios con Firebase Auth.
-- Exportación de conversaciones a PDF o Excel.
-- Dashboard de métricas con estadísticas de uso.
-- Integración de entrada de voz con Whisper API.
-- Traducción automática de conversaciones a múltiples idiomas.
+## Roadmap
 
-------
+- [ ] Streaming responses (token by token)
+- [ ] Model selector in the UI
+- [ ] Move API calls to a serverless function so keys never reach the browser
+- [ ] Markdown and code highlighting in answers
 
-## 🗂️ Modelo de datos
-Cada chat contiene una subcolección de mensajes:
+## Author
 
-chats (collection)
-  └── chatId (document)
-       ├── title: string
-       ├── userId: string
-       ├── createdAt: timestamp
-       └── messages (subcollection)
-            └── messageId (document)
-                 ├── role: "user" | "assistant"
-                 ├── content: string
-                 ├── images: string[]
-                 ├── createdAt: timestamp
-
-
-------
-
-#### 👨‍💻 Autor
-Desarrollado por Juan Jose Borrero Gutierrez
-🚀 Apasionado por el desarrollo web, IA, aplicaciones en la nube.
+**Juan José Borrero** · [Portfolio](https://profile-juanjose.vercel.app/) · [GitHub](https://github.com/juanjosbg)
